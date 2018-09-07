@@ -1,10 +1,8 @@
-# Node.js-NPM Package for the Sonar-API
 # Node.js client for the Sonar-API
 
 ![alt text](https://i.imgur.com/oZIYoDn.png?2 "Sonar Logo")
 
-(Early release of the package: Only includes "Get all" requests to the Sonar API.
-Plans for later releases will include "Get" (Individual data), "Create", "Delete", and "Update" requests to the API.)
+(Early release of the package only includes "getAll" requests! Plans for later releases will include "get", "create", "delete", and "update" requests to the API.)
 
 ## Installation
 Using npm:
