@@ -1,6 +1,6 @@
 # Node.js client for the Sonar-API
 
-![alt text](https://i.imgur.com/oZIYoDn.png?1 "Logo Title Text")
+![alt text](https://imgur.com/oZIYoDn "Logo Title Text")
 
 ## Installation
 
