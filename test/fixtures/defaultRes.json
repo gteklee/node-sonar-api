@@ -1,0 +1,130 @@
+{ 
+    "data": [{ 
+        "id": 1,
+        "name": "Segura Martinez",
+        "account_status_id": 1,
+        "account_type_id": 1,
+        "account_groups": [],
+        "balance_due": 0,
+        "balance_total": 128,
+        "sub_accounts": [],
+        "next_bill_date": "2018-06-27",
+        "delinquent": false 
+    },{ 
+        "id": 12,
+        "name": "Filbert Dione",
+        "account_status_id": 1,
+        "account_type_id": 1,
+        "account_groups": [],
+        "balance_due": 0,
+        "balance_total": 94,
+        "sub_accounts": [],
+        "next_bill_date": "2018-06-27",
+        "delinquent": false 
+    },{ 
+        "id": 123,
+        "name": "Felisa Morpheus",
+        "account_status_id": 1,
+        "account_type_id": 1,
+        "account_groups": [],
+        "balance_due": 0,
+        "balance_total": 235,
+        "sub_accounts": [],
+        "next_bill_date": "2018-06-27",
+        "delinquent": true 
+    },{ 
+        "id": 2,
+        "name": "Kleopatra Manuele",
+        "account_status_id": 1,
+        "account_type_id": 1,
+        "account_groups": [],
+        "balance_due": 0,
+        "balance_total": 84,
+        "sub_accounts": [],
+        "next_bill_date": "2018-09-27",
+        "delinquent": false 
+    },{ 
+        "id": 23,
+        "name": "Genghis Lugh",
+        "account_status_id": 1,
+        "account_type_id": 1,
+        "account_groups": [],
+        "balance_due": 0,
+        "balance_total": 36,
+        "sub_accounts": [],
+        "next_bill_date": "2018-09-27",
+        "delinquent": false 
+    },{ 
+        "id": 234,
+        "name": "Afra Gwenfrewi",
+        "account_status_id": 1,
+        "account_type_id": 1,
+        "account_groups": [],
+        "balance_due": 0,
+        "balance_total": 114,
+        "sub_accounts": [],
+        "next_bill_date": "2018-09-27",
+        "delinquent": true 
+    },{ 
+        "id": 3,
+        "name": "Odessa Tertius",
+        "account_status_id": 1,
+        "account_type_id": 1,
+        "account_groups": [],
+        "balance_due": 0,
+        "balance_total": 114,
+        "sub_accounts": [],
+        "next_bill_date": "2018-06-27",
+        "delinquent": true 
+    },{ 
+        "id": 34,
+        "name": "Shimon Angel",
+        "account_status_id": 1,
+        "account_type_id": 1,
+        "account_groups": [],
+        "balance_due": 0,
+        "balance_total": 87,
+        "sub_accounts": [],
+        "next_bill_date": "2018-06-27",
+        "delinquent": false 
+    },{ 
+        "id": 345,
+        "name": "Alethea Dionysos",
+        "account_status_id": 1,
+        "account_type_id": 1,
+        "account_groups": [],
+        "balance_due": 0,
+        "balance_total": 49,
+        "sub_accounts": [],
+        "next_bill_date": "2018-04-01",
+        "delinquent": false 
+    },{ 
+        "id": 6,
+        "name": "Kajal Naveen",
+        "account_status_id": 1,
+        "account_type_id": 1,
+        "account_groups": [],
+        "balance_due": 0,
+        "balance_total": 26,
+        "sub_accounts": [],
+        "next_bill_date": "2018-04-27",
+        "delinquent": false 
+    },{ 
+        "id": 7,
+        "name": "Gennaro Frej",
+        "account_status_id": 1,
+        "account_type_id": 1,
+        "account_groups": [],
+        "balance_due": 0,
+        "balance_total": 64,
+        "sub_accounts": [],
+        "next_bill_date": "2018-04-27",
+        "delinquent": false 
+    }],
+    "paginator": { 
+        "total_count": 11,
+        "total_pages": 1,
+        "current_page": 1,
+        "limit": 100
+    } 
+}
