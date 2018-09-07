@@ -1,13 +1,31 @@
 {
   "name": "node-sonar-api",
-  "version": "1.0.0",
-  "description": "Node.js library for working with sonar.software's API.",
+  "version": "0.1.0",
+  "description": "Node.js client package for working with sonar.software's API.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "test": "jest",
     "example": "node ./examples/basic.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gteklee/node-sonar-api.git"
+  },
+  "keywords": [
+    "node-sonar-api",
+    "sonar",
+    "sonar.software",
+    "sonar.software api",
+    "sonar.software-api",
+    "sonar api",
+    "sonar-api",
+    "api",
+    "restAPI",
+    "gtek",
+    "gtek communications",
+    "communications"
+  ],
   "author": "Henry Lee Barton III <hleebarton97@gmail.com> (https://hlb3.me/)",
   "license": "ISC",
   "dependencies": {
