@@ -1,14 +1,15 @@
-# Node.js client for the Sonar-API
+# Node.js client for the Sonar REST API
 
 ![alt text](https://i.imgur.com/oZIYoDn.png?2 "Sonar Logo")
 
-(Early release of the package only includes "getAll" requests! Plans for later releases will include "get", "create", "delete", and "update" requests to the API.)
+(Early release of the package only includes "getAll" requests! Plans for later releases will include "get", "create", "delete", and "update" requests to the API)
 
 ## Installation
 Using npm:
 ```sh
 npm install node-sonar-api
 ```
+
 
 ## Usage
 Require the package:
@@ -26,6 +27,7 @@ let client = sonar.createClient({
 ```
 
 Now make requests to the Sonar API!
+
 
 ## Examples
 The below examples are all for "getAll" requests.
@@ -69,5 +71,6 @@ client.getAll.notes('accounts', 23673)
     .then(json => console.log(json));
 ```
 
+
 ## Documentation
-[📖 Sonar REST API](https://sonar.software/apidoc/)
+[📖 sonar.software REST API](https://sonar.software/apidoc/)
