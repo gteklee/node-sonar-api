@@ -1,51 +1,10 @@
-const sonar = require('../index');
-const options = require('./config/options');
+# Node.js client for the Sonar-API
 
-// Create client to make http requests
-let client = sonar.createClient({
-    sonarHost: options.sonarHost,
-    sonarUsername: options.sonarUsername,
-    sonarPassword: options.sonarPassword
-});
+![alt text](https://i.imgur.com/oZIYoDn.png "Logo Title Text")
 
-// client.getAll.accounts()
+## Installation
 
-// client.getAll.account.addresses(1)
+## Usage
 
-// client.getAll.account.contacts(1)
+## Examples
 
-// client.getAll.account.callLogs(1)
-
-// client.getAll.account.dids(1)
-
-// client.getAll.account.dataUsageHistories(1)
-
-// client.getAll.account.ipAssignments(1)
-
-// client.getAll.account.inventory(1)
-
-// client.getAll.account.invoices(1)
-
-// client.getAll.account.paymentMethods(1)
-
-// client.getAll.account.services(1)
-
-// client.getAll.account.taxOverrides(1)
-
-// client.getAll.account.transactions.debits(1)
-
-// client.getAll.account.transactions.deposits(1)
-
-// client.getAll.account.transactions.discounts(1)
-
-// client.getAll.account.transactions.payments(1)
-
-// client.getAll.account.contracts(1)
-
-// client.getAll.addressLists()
-
-// client.getAll.alertingRotations()
-
-// client.getAll.dhcpServers()
-
-// client.getAll.dhcpServerIds()
