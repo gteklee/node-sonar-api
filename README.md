@@ -1,5 +1,6 @@
 # Node.js client for the Sonar REST API
 
+[![npm version](https://badge.fury.io/js/node-sonar-api.svg)](https://badge.fury.io/js/node-sonar-api)
 [![NPM](https://nodei.co/npm/node-sonar-api.png)](https://nodei.co/npm/node-sonar-api/)
 
 Node client for the [sonar.software API](https://sonar.software/apidoc/) ![alt text](https://i.imgur.com/oZIYoDn.png?2 "Sonar Logo")
