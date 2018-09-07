@@ -1,6 +1,8 @@
 # Node.js client for the Sonar REST API
 
-![alt text](https://i.imgur.com/oZIYoDn.png?2 "Sonar Logo")
+[![NPM](https://nodei.co/npm/node-sonar-api.png)](https://nodei.co/npm/node-sonar-api/)
+
+Node client for the [sonar.software API](https://sonar.software/apidoc/) ![alt text](https://i.imgur.com/oZIYoDn.png?2 "Sonar Logo")
 
 (Early release of the package only includes "getAll" requests! Plans for later releases will include "get", "create", "delete", and "update" requests to the API)
 
