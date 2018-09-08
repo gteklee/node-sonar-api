@@ -1,6 +1,6 @@
 {
   "name": "node-sonar-api",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Node.js client package for working with sonar.software's API.",
   "main": "index.js",
   "scripts": {
@@ -21,10 +21,7 @@
     "sonar api",
     "sonar-api",
     "api",
-    "restAPI",
-    "gtek",
-    "gtek communications",
-    "communications"
+    "restAPI"
   ],
   "author": "Henry Lee Barton III <hleebarton97@gmail.com> (https://hlb3.me/)",
   "license": "ISC",
