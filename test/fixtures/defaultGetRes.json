@@ -1,0 +1,12 @@
+{ "data":
+    {   "id": 1,
+        "name": "Account Name",
+        "account_status_id": 3,
+        "account_type_id": 1,
+        "account_groups": [22],
+        "balance_due": 999.99,
+        "sub_accounts": [],
+        "next_bill_date": "2020-04-26",
+        "delinquent": true 
+    } 
+}

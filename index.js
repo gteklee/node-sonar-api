@@ -209,6 +209,42 @@ function Sonar(connection_object) {
                 return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
+            // Get all of a property of an invoice
+            invoice: {
+
+                __path: '/api/v1/accounts/',
+
+                /**
+                 * Get all credits on an invoice.
+                 * 
+                 * @param {Number} account_id
+                 * @param {Number} invoice_id
+                 * @param {Object} obj
+                 * @param {Function} callback
+                 */
+                credits: function(account_id, invoice_id, obj, callback) {
+                    // build path
+                    let path = this.__path + account_id + '/invoices/' + invoice_id + '/credits';
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                },
+
+                /**
+                 * Get all debits on an invoice.
+                 * 
+                 * @param {Number} account_id
+                 * @param {Number} invoice_id
+                 * @param {Object} obj
+                 * @param {Function} callback
+                 */
+                debits: function(account_id, invoice_id, obj, callback) {
+                    // build path
+                    let path = this.__path + account_id + '/invoices/' + invoice_id + '/debits';
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                }
+            },
+
             /**
              * Get all payment methods on an account.
              * 
@@ -251,6 +287,39 @@ function Sonar(connection_object) {
                 return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
+            // All account billing info
+            billing: {
+
+                __path: '/api/v1/accounts/',
+
+                /**
+                 * Get all billing details of an account.
+                 * 
+                 * @param {Number} account_id
+                 * @param {Object} obj
+                 * @param {Function} callback
+                 */
+                details: function(account_id, obj, callback) {
+                    // Build path
+                    let path = this.__path + account_id + '/billing_details';
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                },
+
+                /**
+                 * Get all billing parameters of an account.
+                 * 
+                 * @param {Number} account_id
+                 * @param {Object} obj
+                 * @param {Function} callback
+                 */
+                parameters: function(account_id, obj, callback) {
+                    // Build path
+                    let path = this.__path + account_id + '/billing_parameters';
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                },
+            },
 
             // Transactions
             transactions: {
@@ -1327,6 +1396,259 @@ function Sonar(connection_object) {
             // Make request
             return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         }
+    };
+
+    // Each "get" path of the Sonar API
+    this.get = {
+
+        /**
+         * Get an individual account in the Sonar instance.
+         * 
+         * @param {Number} account_id
+         * @param {Function} callback
+         */
+        Account: function(account_id, callback) {
+            // Build path
+            let path = '/api/v1/accounts/' + account_id;
+            // // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        // Get a property of an individual account
+        account: {
+
+            _path: '/api/v1/accounts',
+
+            /**
+             * Get an address from an individual account.
+             * 
+             * @param {Number} account_id
+             * @param {Number} address_id
+             * @param {Function} callback
+             */
+            address: function(account_id, address_id, callback) {
+                // Build path
+                let path = this._path + '/' + account_id + '/addresses/' + address_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get a call log from an individual account.
+             * 
+             * @param {Number} account_id
+             * @param {Number} callLog_id
+             * @param {Function} callback
+             */
+            callLog: function(account_id, callLog_id, callback) {
+                // Build path
+                let path = this._path + '/' + account_id + '/call_logs/' + callLog_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual account contact.
+             * 
+             * @param {Number} account_id
+             * @param {Number} contact_id
+             * @param {Function} callback
+             */
+            contact: function(account_id, contact_id, callback) {
+                // Build path
+                let path = this._path + '/' + account_id + '/contacts/' + contact_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual did from an account.
+             * 
+             * @param {Number} account_id
+             * @param {Number} did_id
+             * @param {Function} callback
+             */
+            did: function(account_id, did_id, callback) {
+                // Build path
+                let path = this._path + '/' + account_id + '/dids/' + did_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual data usage history
+             * from an account.
+             * 
+             * @param {Number} account_id
+             * @param {Number} data_usage_id
+             * @param {Function} callback
+             */
+            dataUsageHistory: function(account_id, data_usage_id, callback) {
+                // Build path
+                let path = this._path + '/' + account_id + '/data_usage_histories/' + data_usage_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual ip assignment
+             * from an account.
+             * 
+             * @param {Number} account_id
+             * @param {Number} ip_id
+             * @param {Function} callback
+             */
+            ipAssignment: function(account_id, ip_id, callback) {
+                // Build path
+                let path = this._path + '/' + account_id + '/ip_assignments/' + ip_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            // Individual inventory properties
+            inventory: {
+
+                __path: '/api/v1/accounts',
+
+                /**
+                 * Get an individual inventory item
+                 * from an account.
+                 * 
+                 * @param {Number} account_id
+                 * @param {Number} ip_id
+                 * @param {Function} callback
+                 */
+                item: function(account_id, item_id, callback) {
+                    // Build path
+                    let path = this.__path + '/' + account_id + '/inventory_items/' + item_id;
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                }
+            },
+
+            /**
+             * Get an individual inventory item
+             * from an account.
+             * 
+             * @param {Number} account_id
+             * @param {Number} invoice_id
+             * @param {Function} callback
+             */
+            invoice: function(account_id, invoice_id, callback) {
+                // Build path
+                let path = this._path + '/' + account_id + '/invoices/' + invoice_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual payment method
+             * from an account
+             * 
+             * @param {Number} account_id
+             * @param {Number} payment_method_id
+             * @param {Function} callback
+             */
+            paymentMethod: function(account_id, payment_method_id, callback) {
+                // Build path
+                let path = this._path + '/' + account_id + '/payment_methods/' + payment_method_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual account service
+             * 
+             * @param {Number} account_id
+             * @param {Number} relationship_id
+             * @param {Function} callback
+             */
+            service: function(account_id, relationship_id, callback) {
+                // Build path
+                let path = this._path + '/' + account_id + '/services/' + relationship_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual tax override
+             * from an account.
+             * 
+             * (requires super user permissions)
+             * 
+             * @param {Number} account_id
+             * @param {Number} relationship_id
+             * @param {Function} callback
+             */
+            taxOverride: function(account_id, tax_id, callback) {
+                // Build path
+                let path = this._path + '/' + account_id + '/account_tax_overrides/' + tax_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            // Transactions
+            transactions: {
+
+                __path: '/api/v1/accounts',
+                
+                /**
+                 * Get an individual account debit.
+                 * 
+                 * @param {Number} account_id
+                 * @param {Number} debit_id
+                 * @param {Function} callback
+                 */
+                debit: function(account_id, debit_id, callback) {
+                    // Build path
+                    let path = this.__path + '/' + account_id + '/transactions/debits/' + debit_id;
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                },
+
+                /**
+                 * Get an individual account deposit.
+                 * 
+                 * @param {Number} account_id
+                 * @param {Number} deposit_id
+                 * @param {Function} callback
+                 */
+                deposit: function(account_id, deposit_id, callback) {
+                    // Build path
+                    let path = this.__path + '/' + account_id + '/transactions/deposits/' + deposit_id;
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                },
+
+                /**
+                 * Get an individual account deposit.
+                 * 
+                 * @param {Number} account_id
+                 * @param {Number} discount_id
+                 * @param {Function} callback
+                 */
+                discount: function(account_id, discount_id, callback) {
+                    // Build path
+                    let path = this.__path + '/' + account_id + '/transactions/discounts/' + discount_id;
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                },
+
+                /**
+                 * Get an individual account deposit.
+                 * 
+                 * @param {Number} account_id
+                 * @param {Number} payment_id
+                 * @param {Function} callback
+                 */
+                payment: function(account_id, payment_id, callback) {
+                    // Build path
+                    let path = this.__path + '/' + account_id + '/transactions/payments/' + payment_id;
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                }
+            }
+        },
     };
 }
 

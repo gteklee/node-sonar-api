@@ -1,4 +1,4 @@
-const sonar = require('../index');
+const sonar = require('..');
 const options = require('./config/options');
 
 // Create client to make http requests
@@ -9,8 +9,8 @@ let client = sonar.createClient({
 });
 
 // Make requests
-client.getAll.accounts()
-    .then(json => console.log(json));
+// client.getAll.accounts()
+//     .then(json => console.log(json));
 
 // client.getAll.accounts(json => {
 //     console.log(json);
@@ -196,6 +196,16 @@ client.getAll.accounts()
 // client.getAll.account.invoices(1, { limit: 5, page: 3 }, json => {
 //     console.log(json);
 // });
+
+
+
+
+
+// client.getAll.account.invoice.credits(1, 63031)
+//     .then(json => console.log(json));
+
+// client.getAll.account.invoice.debits(1, 63031)
+//     .then(json => console.log(json));
 
 
 
@@ -1744,3 +1754,13 @@ client.getAll.accounts()
 // client.getAll.voiceProviders({ limit: 5, page: 1 }, json => {
 //     console.log(json);
 // });
+
+
+
+
+
+// client.getAll.account.billing.details(1)
+//     .then(json => console.log(json));
+
+// client.getAll.account.billing.parameters(1)
+//     .then(json => console.log(json));

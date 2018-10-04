@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "test": "jest",
-    "example": "node ./examples/basic.js"
+    "example": "node ./examples/basic-get.js",
+    "example-all": "node ./examples/basic-getAll.js"
   },
   "repository": {
     "type": "git",
