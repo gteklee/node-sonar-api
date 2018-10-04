@@ -1,6 +1,6 @@
 {
   "name": "node-sonar-api",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Node.js client package for working with sonar.software's API.",
   "main": "index.js",
   "scripts": {
