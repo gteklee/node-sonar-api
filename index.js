@@ -426,6 +426,27 @@ function Sonar(connection_object) {
             return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
+        // Alerting rotation properties
+        alertingRotation: {
+
+            _path: '/api/v1/network/monitoring/alerting_rotations/',
+
+            /**
+             * Get all day/times of an alerting rotation.
+             * Limit and Page can be specified through an object.
+             * 
+             * @param {Number} alertingRotation_id 
+             * @param {Number} obj 
+             * @param {Function} callback 
+             */
+            days: function(alertingRotation_id, obj, callback) {
+                // Build path
+                let path = this._path + alertingRotation_id + '/alerting_rotation_days';
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            }
+        },
+
         /**
          * Get all DHCP Servers in the Sonar instance.
          * Limit and Page can be specified through an object.
@@ -486,6 +507,7 @@ function Sonar(connection_object) {
 
         // Get all financial properties
         financial: {
+
             _path: '/api/v1/financial',
 
             /**
@@ -754,7 +776,10 @@ function Sonar(connection_object) {
              * Get a list of all addresses for an
              * inventory location ID.
              * 
-             * @param {Number} model_id
+             * !! -- SEEMS TO BE BROKEN IN SONAR WITH
+             * PERMISSIONS -- !!
+             * 
+             * @param {Number} location_id
              * @param {Object} obj
              * @param {Function} callback
              */
@@ -956,7 +981,7 @@ function Sonar(connection_object) {
              * @param {Object} obj
              * @param {Function} callback
              */
-/**/            addresses: function(networkSite_id, obj, callback) {
+/**/        addresses: function(networkSite_id, obj, callback) {
                 // Build path
                 let path = this._path + '/' + networkSite_id + '/addresses';
                 // Make request
@@ -1155,7 +1180,7 @@ function Sonar(connection_object) {
             },
 
             /**
-             * Get all custom fields 
+             * Get all address types
              * the Sonar instance.
              * 
              * @param {Object} obj
@@ -1180,14 +1205,14 @@ function Sonar(connection_object) {
                  * @param {Object} obj
                  * @param {Function} callback
                  */
-                billingFreePeriods: function(policy_id, obj, callback) {
+                freePeriods: function(policy_id, obj, callback) {
                     // Build path
                     let path = this.__path + '/usage_based_billing_policies/' + policy_id + '/usage_based_billing_free_periods';
                     // Make request
                     return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 },
 
-                billingPolicies: function(obj, callback) {
+                policies: function(obj, callback) {
                     // Build path
                     let path = this.__path + '/usage_based_billing_policies';
                     // Make request
@@ -1621,7 +1646,7 @@ function Sonar(connection_object) {
                 },
 
                 /**
-                 * Get an individual account deposit.
+                 * Get an individual account discount.
                  * 
                  * @param {Number} account_id
                  * @param {Number} discount_id
@@ -1635,7 +1660,7 @@ function Sonar(connection_object) {
                 },
 
                 /**
-                 * Get an individual account deposit.
+                 * Get an individual account payment.
                  * 
                  * @param {Number} account_id
                  * @param {Number} payment_id
@@ -1647,7 +1672,1065 @@ function Sonar(connection_object) {
                     // Make request
                     return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
                 }
+            },
+
+            /**
+             * Get an individual contract from an account.
+             * 
+             * @param {Number} account_id 
+             * @param {Number} contract_id 
+             * @param {Function} callback 
+             */
+            contract: function(account_id, contract_id, callback) {
+                // Build path
+                let path = this._path + '/' + account_id + '/contracts/' + contract_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual contract in base 64
+             * from an account.
+             * @param {Number} account_id 
+             * @param {Number} contract_id 
+             * @param {Function} callback 
+             */
+            contractBase64: function(account_id, contract_id, callback) {
+                // Build path
+                let path = this._path + '/' + account_id + '/contracts/' + contract_id + '/base64';
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+        },
+
+        /**
+         * Get an individual address list from the
+         * Sonar Instance.
+         * 
+         * @param {Number} addressList_id 
+         * @param {Function} callback 
+         */
+        addressList: function(addressList_id, callback) {
+            // Build path
+            let path = '/api/v1/network/provisioning/address_lists/' + addressList_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        /**
+         * Get an individual alerting rotation from 
+         * the Sonar Instance.
+         * 
+         * @param {Number} alertingRotation_id 
+         * @param {Function} callback 
+         */
+        AlertingRotation: function(alertingRotation_id, callback) {
+            // Build path
+            let path = '/api/v1/network/monitoring/alerting_rotations/' + alertingRotation_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        // Alerting rotation properties
+        alertingRotation: {
+
+            _path: '/api/v1/network/monitoring/alerting_rotations/',
+
+            /**
+             * Get an individual alerting rotation day/time.
+             * 
+             * @param {Number} alertingRotation_id 
+             * @param {Number} day_id 
+             * @param {Function} callback 
+             */
+            day: function(alertingRotation_id, day_id, callback) {
+                // Build path
+                let path = this._path + alertingRotation_id + '/alerting_rotation_days/' + day_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             }
+        },
+
+        /**
+         * Get an individual DHCP Server Identifier
+         * in the Sonar Instance.
+         * 
+         * @param {Number} dhcpServerId_id 
+         * @param {Function} callback 
+         */
+        dhcpServerId: function(dhcpServerId_id, callback) {
+            // Build path
+            let path = '/api/v1/network/provisioning/dhcp_server_identifiers/' + dhcpServerId_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        /**
+         * Get an individual DHCP Server from the
+         * Sonar Instance.
+         * 
+         * @param {Number} dhcpServer_id 
+         * @param {Function} callback 
+         */
+        dhcpServer: function(dhcpServer_id, callback) {
+            // Build path
+            let path = '/api/v1/network/provisioning/dhcp_servers/' + dhcpServer_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        /**
+         * Get an individual DID from the 
+         * Sonar instance.
+         * 
+         * @param {Number} did_id 
+         * @param {Function} callback 
+         */
+        did: function(did_id, callback) {
+            // Build path
+            let path = '/api/v1/system/voice/dids/' + did_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        /**
+         * 
+         * @param {String} entity 
+         * @param {Number} entity_id 
+         * @param {Number} file_id 
+         * @param {Function} callback 
+         */
+        file: function(entity, entity_id, file_id, callback) {
+            // Build path
+            let path = '/api/v1/' + entity + '/' + entity_id + '/files/' + file_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        // Financial properties
+        financial: {
+
+            _path: '/api/v1/financial',
+
+            /**
+             * Get an individual tax from the 
+             * Sonar instance.
+             * 
+             * @param {Number} tax_id 
+             * @param {Function} callback 
+             */
+            Tax: function(tax_id, callback) {
+                // Build path
+                let path = this._path + '/taxes/' + tax_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            // Get all of a property of a tax
+            tax: {
+
+                __path: '/api/v1/financial/taxes/',
+
+                /**
+                 * Get all geotaxes for a tax in the Sonar instance.
+                 * Limit and Page can be specified through an object.
+                 * 
+                 * @param {Number} tax_id
+                 * @param {Number} geoTax_id
+                 * @param {Function} callback
+                 */
+                geoTax: function(tax_id, geoTax_id, callback) {
+                    // Build path
+                    let path = this.__path + tax_id + '/geotaxes/' + geoTax_id;
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                }
+            },
+
+            /**
+             * Get an individual ledger code from
+             * the Sonar Instance.
+             */
+            generalLedgerCode: function(generalLedgerCode_id, callback) {
+                // Build path
+                let path = this._path + '/general_ledger_codes/' + generalLedgerCode_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+        },
+
+        // Properties of IPAM
+        ipam: {
+            _path: '/api/v1/network/ipam/supernets',
+
+            /**
+             * Get an individual supernet from
+             * the Sonar instance.
+             * 
+             * @param {Number} supernet_id 
+             * @param {Function} callback 
+             */
+            supernet: function(supernet_id, callback) {
+                // Build path
+                let path = this._path + '/' + supernet_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual subnet from
+             * a supernet.
+             * 
+             * @param {Number} supernet_id 
+             * @param {Number} subnet_id 
+             * @param {Function} callback 
+             */
+            subnet: function(supernet_id, subnet_id, callback) {
+                // Build path
+                let path = this._path + '/' + supernet_id + '/subnets/' + subnet_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual ip pool from
+             * a subnet.
+             * 
+             * @param {Number} supernet_id 
+             * @param {Number} subnet_id 
+             * @param {Number} ipPool_id 
+             * @param {Funtion} callback 
+             */
+            ipPool: function(supernet_id, subnet_id, ipPool_id, callback) {
+                // Build path
+                let path = this._path + '/' + supernet_id + '/subnets/' + subnet_id + '/ip_pools/' + ipPool_id; 
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback); 
+            }
+        },
+
+        /**
+         * Get an individual inbound email account
+         * from the Sonar instance.
+         * 
+         * @param {Number} inboundEmailAccount_id 
+         * @param {Function} callback 
+         */
+        inboundEmailAccount: function(inboundEmailAccount_id, callback) {
+            // Build path
+            let path = '/api/v1/system/tickets/inbound_email_accounts/' + inboundEmailAccount_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        /**
+         * Get an individual inline device
+         * from the Sonar instance.
+         * 
+         * @param {Number} inlineDevice_id 
+         * @param {Function} callback 
+         */
+        inlineDevice: function(inlineDevice_id, callback) {
+            // Build path
+            let path = '/api/v1/network/provisioning/inline_devices/' + inlineDevice_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        // Inventory properties
+        inventory: {
+            _path: '/api/v1/inventory',
+
+            /**
+             * Get an individual inventory category 
+             * from the Sonar instance.
+             * 
+             * @param {Number} category_id 
+             * @param {Function} callback 
+             */
+            category: function(category_id, callback) {
+                // Build path
+                let path = this._path + '/categories/' + category_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual inventory item
+             * from the Sonar instance
+             * 
+             * @param {Number} item_id 
+             * @param {Function} callback 
+             */
+            item: function(item_id, callback) {
+                // Build path
+                let path = this._path + '/items/' + item_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual manufacturer from
+             * the Sonar instance.
+             * 
+             * @param {Number} manufacturer_id 
+             * @param {Function} callback 
+             */
+            manufacturer: function(manufacturer_id, callback) {
+                // Build path
+                let path = this._path + '/manufacturers/' + manufacturer_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual model from
+             * the Sonar instance.
+             * 
+             * @param {Number} model_id 
+             * @param {Function} callback 
+             */
+            Model: function(model_id, callback) {
+                // Build path
+                let path = this._path + '/models/' + model_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            // Model properties
+            model: {
+                __path: '/api/v1/inventory/models',
+
+                /**
+                 * Get an individual field from
+                 * an inventory model.
+                 * 
+                 * @param {Number} model_id 
+                 * @param {Number} field_id 
+                 * @param {Function} callback 
+                 */
+                field: function(model_id, field_id, callback) {
+                    // Build path
+                    let path = this.__path + '/' + model_id + '/fields/' + field_id;
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                },
+
+                /**
+                 * Get an individual deployment type
+                 * from an inventory model.
+                 * 
+                 * @param {Number} model_id 
+                 * @param {Number} deploymentType_id 
+                 * @param {Function} callback 
+                 */
+                deploymentType: function(model_id, deploymentType_id, callback) {
+                    // Build path
+                    let path = this.__path + '/' + model_id + '/inventory_model_deployment_types/' + deploymentType_id;
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                },
+
+                /**
+                 * Get an individual depletion
+                 * threshold from an inventory
+                 * model.
+                 * 
+                 * @param {Number} model_id 
+                 * @param {Number} depletionThreshold_id 
+                 * @param {Function} callback 
+                 */
+                depletionThreshold: function(model_id, depletionThreshold_id, callback) {
+                    // Build path
+                    let path = this.__path + '/' + model_id + '/depletion_thresholds/' + depletionThreshold_id;
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                },
+            },
+
+            /**
+             * Get an individual inventory
+             * location address from the
+             * Sonar instance.
+             * 
+             * !! -- SEEMS TO BE BROKEN IN SONAR WITH
+             * PERMISSIONS -- !!
+             * 
+             * @param {Number} location_id 
+             * @param {Number} address_id 
+             * @param {Function} callback 
+             */
+            locationAddress: function(location_id, address_id, callback) {
+                // Build path
+                let path = this._path + '_locations/' + location_id + '/addresses/' + address_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual generic
+             * assignee from inventory.
+             * 
+             * @param {Number} assignee_id 
+             * @param {Function} callback 
+             */
+            genericAssignee: function(assignee_id, callback) {
+                // Build path
+                let path = this._path + '/generic_inventory_assignees/' + assignee_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual physical
+             * inventory location.
+             * 
+             * @param {Number} location_id 
+             * @param {Function} callback 
+             */
+            location: function(location_id, callback) {
+                // Build path
+                let path = this._path + '/inventory_locations/' + location_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual vehicle from
+             * inventory.
+             * 
+             * @param {Number} vehicle_id 
+             * @param {Function} callback 
+             */
+            vehicle: function(vehicle_id, callback) {
+                // Build path
+                let path = this._path + '/vehicles/' + vehicle_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            }
+        },
+
+
+        Job: function(job_id, callback) {
+            // Build path
+            let path = '/api/v1/scheduling/jobs/' + job_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        // Job properties
+        job: {
+            _path: '/api/v1/scheduling/jobs',
+
+            /**
+             * Get an individual job type from
+             * the Sonar instance.
+             * 
+             * @param {Number} type_id 
+             * @param {Function} callback 
+             */
+            type: function(type_id, callback) {
+                // Build path
+                let path = '/api/v1/scheduling/job_types/' + type_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual desired 
+             * date / time of a job.
+             * 
+             * @param {Number} job_id 
+             * @param {Number} date_id 
+             * @param {Function} callback 
+             */
+            desiredDate: function(job_id, date_id, callback) {
+                // Build path
+                let path = this._path + '/' + job_id + '/desired_job_datetimes/' + date_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            }
+        },
+
+        // Monitoring properties
+        monitoring: {
+            _path: '/api/v1/network/monitoring',
+
+            /**
+             * Get an invividual monitoring template
+             * from the Sonar instance.
+             * 
+             * @param {Number} template_id 
+             * @param {Function} callback 
+             */
+            template: function(template_id, callback) {
+                // Build path
+                let path = this._path + '/monitoring_templates/' + template_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual monitoring graph
+             * from a monitoring template.
+             * 
+             * @param {Number} template_id 
+             * @param {Number} graph_id 
+             * @param {Function} callback 
+             */
+            graph: function(template_id, graph_id, callback) {
+                // Build path
+                let path = this._path + '/monitoring_templates/' + template_id + '/monitoring_graphs/' + graph_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual SNMP OID threshold
+             * from a template OID.
+             * 
+             * @param {Number} template_id 
+             * @param {Number} oid_id 
+             * @param {Number} threshold_id 
+             * @param {Function} callback 
+             */
+            oidThreshold: function(template_id, oid_id, threshold_id, callback) {
+                // Build path
+                let path = this._path + '/monitoring_templates/' + template_id + '/snmp_oids/' + oid_id + '/snmp_oid_thresholds/' + threshold_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual OID from a 
+             * monitoring template.
+             * 
+             * @param {Number} template_id 
+             * @param {Number} oid_id 
+             * @param {Function} callback 
+             */
+            templateOid: function(template_id, oid_id, callback) {
+                // Build path
+                let path = this._path + '/monitoring_templates/' + template_id + '/snmp_oids/' + oid_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+        },
+
+        /**
+         * Get an individual network site from
+         * the Sonar instance.
+         * 
+         * @param {Number} networkSite_id 
+         * @param {Function} callback 
+         */
+        NetworkSite: function(networkSite_id, callback) {
+            // Build path
+            let path = '/api/v1/network/network_sites/' + networkSite_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        // Network site properties
+        networkSite: {
+            _path: '/api/v1/network/network_sites',
+
+            /**
+             * Get an individual ip assignment from
+             * a network site.
+             * 
+             * @param {Number} networkSite_id 
+             * @param {Number} ip_id 
+             * @param {Function} callback 
+             */
+            ipAssignment: function(networkSite_id, ip_id, callback) {
+                // Build path
+                let path = this._path + '/' + networkSite_id + '/ip_assignments/' + ip_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual inventory item from
+             * a network site. 
+             * 
+             * @param {Number} networkSite_id 
+             * @param {Number} item_id 
+             * @param {Function} callback 
+             */
+            inventory: function(networkSite_id, item_id, callback) {
+                // Build path
+                let path = this._path + '/' + networkSite_id + '/inventory_items/' + item_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual site address from
+             * a network site.
+             * 
+             * @param {Number} networkSite_id 
+             * @param {Number} address_id 
+             * @param {Function} callback 
+             */
+            address: function(networkSite_id, address_id, callback) {
+                // Build path
+                let path = this._path + '/' + networkSite_id + '/addresses/' + address_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            }
+        },
+
+        /**
+         * Get an individual note from the
+         * Sonar instance.
+         * 
+         * @param {String} entity_type 
+         * @param {Number} entity_id 
+         * @param {Number} note_id 
+         * @param {Function} callback 
+         */
+        note: function(entity_type, entity_id, note_id, callback) {
+            // Build path
+            let path = '/api/v1/notes/' + entity_type + '/' + entity_id + '/' + note_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        /**
+         * Get an individual package from
+         * the Sonar instance.
+         * 
+         * @param {Number} package_id 
+         * @param {Function} callback 
+         */
+        package: function(package_id, callback) {
+            // Build path
+            let path = '/api/v1/system/packages/' + package_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        // Radius properties
+        radius: {
+            _path: '/api/v1/network/provisioning/radius_groups',
+
+            /**
+             * Get an individual radius account from
+             * an account in Sonar. 
+             * 
+             * @param {Number} account_id 
+             * @param {Number} radius_account_id 
+             * @param {Function} callback 
+             */
+            account: function(account_id, radius_account_id, callback) {
+                // Build path
+                let path = '/api/v1/accounts/' + account_id + '/radius_accounts/' + radius_account_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual radius group from
+             * the Sonar instance. 
+             * 
+             * @param {Number} radius_group_id 
+             * @param {Function} callback 
+             */
+            group: function(radius_group_id, callback) {
+                // Build path
+                let path = this._path + '/' + radius_group_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual reply attribute from
+             * a radius group.
+             * 
+             * @param {Number} radius_group_id 
+             * @param {Number} attribute_id 
+             * @param {Function} callback 
+             */
+            replyAttributes: function(radius_group_id, attribute_id, callback) {
+                // Build path
+                let path = this._path + '/' + radius_group_id + '/attributes/' + attribute_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            }
+        },
+
+        /**
+         * Get an individual rate center from
+         * the Sonar instance.
+         * 
+         * @param {Number} rateCenter_id 
+         * @param {Function} callback 
+         */
+        rateCenter: function(rateCenter_id, callback) {
+            // Build path
+            let path = '/api/v1/system/voice/rate_centers/' + rateCenter_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        /**
+         * Get an individual role id from
+         * the Sonar instance.
+         * 
+         * @param {Number} role_id 
+         * @param {Function} callback 
+         */
+        role: function(role_id, callback) {
+            // Build path
+            let path = '/api/v1/roles/' + role_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        /**
+         * Get an individual schedule from
+         * the Sonar instance.
+         * 
+         * @param {Number} schedule_id 
+         * @param {Function} callback 
+         */
+        schedule: function(schedule_id, callback) {
+            // Build path
+            let path = '/api/v1/scheduling/schedules/' + schedule_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        // Scheduled properties
+        scheduled: {
+            _path: '/api/v1/scheduling',
+
+            /**
+             * Get an individual scheduled event
+             * from an account.
+             * 
+             * @param {Number} account_id 
+             * @param {Number} event_id 
+             * @param {Function} callback 
+             */
+            event: function(account_id, event_id, callback) {
+                // Build path
+                let path = '/api/v1/accounts/' + account_id + '/scheduled_events/' + event_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual schedule blocker
+             * from the Sonar instance.
+             * 
+             * @param {Number} blocker_id 
+             * @param {Function} callback 
+             */
+            blocker: function(blocker_id, callback) {
+                // Build path
+                let path = this._path + '/schedule_blockers/' + blocker_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual scheduled time off
+             * from the Sonar instance.
+             * 
+             * @param {Number} timeOff_id 
+             * @param {Function} callback 
+             */
+            timeOff: function(timeOff_id, callback) {
+                // Build path
+                let path = this._path + '/scheduled_time_offs/' + timeOff_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            }
+        },
+
+        system: {
+            _path: '/api/v1/system',
+
+            /**
+             * Get an individual service from
+             * the Sonar instance.
+             * 
+             * @param {Number} service_id 
+             * @param {Function} callback 
+             */
+            service: function(service_id, callback) {
+                // Build path
+                let path = this._path + '/services/' + service_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual custom field
+             * from the Sonar instance.
+             * 
+             * @param {Number} customField_id 
+             * @param {Function} callback 
+             */
+            customField: function(customField_id, callback) {
+                // Build path
+                let path = this._path + '/custom_fields/' + customField_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual address type
+             * from the sonar instance. 
+             * 
+             * @param {Number} type_id 
+             * @param {Function} callback 
+             */
+            addressType: function(type_id, callback) {
+                // Build path
+                let path = this._path + '/address_types/' + type_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            // System billing properties
+            billing: {
+                __path: '/api/v1/system/usage_based_billing_policies',
+
+                /**
+                 * Get an individual usage based
+                 * billing free period from the
+                 * Sonar instance.
+                 * 
+                 * @param {Number} policy_id 
+                 * @param {Number} freePeriod_id 
+                 * @param {Function} callback 
+                 */
+                freePeriod: function(policy_id, freePeriod_id, callback) {
+                    // Build path
+                    let path = this.__path + '/' + policy_id + '/usage_based_billing_free_periods/' + freePeriod_id;
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                },
+
+                /**
+                 * Get an individual usage based
+                 * billing policy from the Sonar
+                 * instance. 
+                 * 
+                 * @param {Number} policy_id 
+                 * @param {Function} callback 
+                 */
+                policy: function(policy_id, callback) {
+                    // Build path
+                    let path = this.__path + '/' + policy_id;
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                },
+            },
+
+            // System account properties
+            account: {
+                __path: '/api/v1/system',
+
+                /**
+                 * Get an individual account group
+                 * from the Sonar instance. 
+                 * 
+                 * @param {Number} group_id 
+                 * @param {Function} callback 
+                 */
+                group: function(group_id, callback) {
+                    // Build path
+                    let path = this.__path + '/account_groups/' + group_id;
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                },
+
+                /**
+                 * Get an individual account status
+                 * from the Sonar instance.
+                 * 
+                 * @param {Number} status_id 
+                 * @param {Function} callback 
+                 */
+                status: function(status_id, callback) {
+                    // Build path
+                    let path = this.__path + '/account_statuses/' + status_id;
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                },
+
+                /**
+                 * Get an individual account type
+                 * from the Sonar instance.
+                 * 
+                 * @param {Number} type_id 
+                 * @param {Function} callback 
+                 */
+                type: function(type_id, callback) {
+                    // Build path
+                    let path = this.__path + '/account_types/' + type_id;
+                    // Make request
+                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                },
+            }
+        },
+
+        /**
+         * Get an individual task template from
+         * the Sonar instance.
+         * 
+         * @param {Number} taskTemplate_id 
+         * @param {Function} callback 
+         */
+        TaskTemplate: function(taskTemplate_id, callback) {
+            // Build path
+            let path = '/api/v1/system/misc/task_templates/' + taskTemplate_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        // Task template properties
+        taskTemplate: {
+            _path: '/api/v1/system/misc/task_templates',
+
+            /**
+             * Get an individual task from a
+             * task template.
+             * 
+             * @param {Number} taskTemplate_id 
+             * @param {Number} task_id 
+             * @param {Function} callback 
+             */
+            task: function(taskTemplate_id, task_id, callback) {
+                // Build path
+                let path = this._path + '/' + taskTemplate_id + '/template_tasks/' + task_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+        },
+
+        /**
+         * Get an individual task from an entity.
+         * 
+         * @param {String} entity 
+         * @param {Number} entity_id 
+         * @param {Number} task_id 
+         * @param {Function} callback 
+         */
+        task: function(entity, entity_id, task_id, callback) {
+            // Build path
+            let path = '/api/v1/' + entity + '/' + entity_id + '/tasks/' + task_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        /**
+         * Get an individual ticket from
+         * the Sonar instance.
+         * 
+         * @param {Number} ticket_id 
+         * @param {Function} callback 
+         */
+        Ticket: function(ticket_id, callback) {
+            // Build path
+            let path = '/api/v1/tickets/' + ticket_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        // Ticket properties
+        ticket: {
+            _path: '/api/v1/tickets',
+
+            /**
+             * Get an individual ticket category
+             * from the Sonar instance. 
+             * 
+             * @param {Number} category_id 
+             * @param {Function} callback 
+             */
+            category: function(category_id, callback) {
+                // Build path
+                let path = '/api/v1/system/tickets/ticket_categories/' + category_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual ticket group
+             * from the Sonar instance.
+             * 
+             * @param {Number} group_id 
+             * @param {Function} callback 
+             */
+            group: function(group_id, callback) {
+                // Build path
+                let path = '/api/v1/system/tickets/ticket_groups/' + group_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual ticket comment
+             * from a ticket.
+             * 
+             * @param {Number} ticket_id 
+             * @param {Number} comment_id 
+             * @param {Function} callback 
+             */
+            comment: function(ticket_id, comment_id, callback) {
+                // Build path
+                let path = this._path + '/' + ticket_id + '/ticket_comments/' + comment_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Get an individual ticket reply
+             * from a ticket.
+             * 
+             * @param {Number} ticket_id 
+             * @param {Number} reply_id 
+             * @param {Function} callback 
+             */
+            reply: function(ticket_id, reply_id, callback) {
+                // Build path
+                let path = this._path + '/' + ticket_id + '/ticket_replies/' + reply_id;
+                // Make request
+                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            },
+        },
+
+        /**
+         * Get an individual user from the
+         * Sonar instance.
+         * 
+         * @param {Number} user_id 
+         * @param {Function} callback 
+         */
+        user: function(user_id, callback) {
+            // Build path
+            let path = '/api/v1/users/' + user_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+        },
+
+        /**
+         * Get an individual voice provider from
+         * the Sonar instance.
+         * 
+         * @param {Number} voiceProvider_id 
+         * @param {Function} callback 
+         */
+        voiceProvider: function(voiceProvider_id, callback) {
+            // Build path
+            let path = '/api/v1/system/voice/voice_providers/' + voiceProvider_id;
+            // Make request
+            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
     };
 }
