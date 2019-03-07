@@ -13,7 +13,7 @@ let client = sonar.createClient({
 
 
 // client.update.Account(1, {
-//     name: 'Joey Smith'
+//     name: 'Test Name Change'
 // })
 //     .then(json => console.log(json));
 
@@ -47,7 +47,7 @@ let client = sonar.createClient({
 
 
 // client.update.account.contact(1, 9008, {
-//     name: 'Jones Lee',
+//     name: 'Test Contact Name',
 // })
 //     .then(json => console.log(json));
 
@@ -65,7 +65,7 @@ let client = sonar.createClient({
 
 
 // client.update.account.ipAssignment(1, 42267, {
-//     description: 'Briones Test'
+//     description: 'Testing description'
 // })
 //     .then(json => console.log(json));
 
