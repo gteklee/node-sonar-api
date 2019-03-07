@@ -105,5 +105,43 @@ client.get.task('accounts', 1, 203)
     .then(json => console.log(json));
 ```
 
+
+## Examples (.update) [Only for /api/v1/accounts/]
+The below examples are "update" requests for /api/v1/accounts/...
+
+All requests with "update" require an identifier.
+
+Using promises:
+```javascript
+client.update.Account(1, {
+    name: 'New Name Test'
+})
+    .then(json => console.log(json));
+```
+Properties of an entity are accessed by lowercase:
+```javascript
+client.update.account.address(1, 63, {
+    line1: 'AT%26T Center Parkway',
+    city: 'San Antontio',
+    state: 'TX',
+    county: 'Bexar Co.',
+    zip: '78219',
+    country: 'US'
+})
+    .then(json => console.log(json));
+```
+[📖 URL Encoding Special Character References](https://www.w3schools.com/tags/ref_urlencode.asp)
+
+Using a callback:
+```javascript
+client.update.Account(1, { 
+    name: 'New Name Test' 
+}, json => {
+    console.log(json);
+});
+```
+## Notice
+"update" functionality only implemented for the /api/v1/accounts/... portion of the API. This is for testing purposes as testing with the 'PATCH' requests are limited. If any problems are encountered while using the "update" functionality, please open an issue.
+
 ## Documentation
 [📖 sonar.software REST API](https://sonar.software/apidoc/)
