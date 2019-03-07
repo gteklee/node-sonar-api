@@ -3021,7 +3021,7 @@ function Sonar(connection_object) {
                 },
 
                 /**
-                 * Get an individual account payment
+                 * Update an individual account payment
                  * reference.
                  * 
                  * @param {Number} account_id
