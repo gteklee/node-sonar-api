@@ -17,7 +17,11 @@ let client = sonar.createClient({
 // })
 //     .then(json => console.log(json));
 
-
+// client.update.Account(1, {
+//     name: 'Account Test'
+// }, json => {
+//     console.log(json);
+// });
 
 
 
@@ -163,5 +167,14 @@ let client = sonar.createClient({
 
 // client.update.account.contract(1, 3, {
 //     custom_message: 'test custom message'
+// })
+//     .then(json => console.log(json));
+
+
+
+
+
+// client.update.entity.customField('jobs', 19390, 28, {
+//     data: "No"
 // })
 //     .then(json => console.log(json));

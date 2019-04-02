@@ -11,10 +11,11 @@ if(typeof Promise === 'undefined') {
  * @param {String} host
  * @param {Object} obj
  * @param {String} path
+ * @param {String} method
  * @param {Object} headers 
  * @param {Function} callback 
  */
-function makeRequestAndCreatePromise(host, obj, path, headers, callback) {
+function makeRequestAndCreatePromise(host, obj, path, method, headers, callback) {
     // If object is specified
     if(obj) {
         if(typeof obj === 'function') { // Is it being used as callback?
@@ -26,6 +27,7 @@ function makeRequestAndCreatePromise(host, obj, path, headers, callback) {
     // Create the promise
     let promise = new Promise((resolve, reject) => {
         fetch('https://' + host + path, { // Make http request
+            method: method,
             headers: headers
         })
             .then(res => res.json())
@@ -45,36 +47,16 @@ function makeRequestAndCreatePromise(host, obj, path, headers, callback) {
     return promise;
 }
 
+function makeGetRequestAndCreatePromise(host, obj, path, headers, callback) {
+    return makeRequestAndCreatePromise(host, obj, path, 'GET', headers, callback);
+}
+
 function makePatchRequestAndCreatePromise(host, obj, path, headers, callback) {
-    // If object is specified
-    if(obj) {
-        if(typeof obj === 'function') { // Is it being used as callback?
-            callback = obj;
-        } else { // Generate path
-            path = generatePath(obj, path);
-        }
-    }
-    // Create the promise
-    let promise = new Promise((resolve, reject) => {
-        fetch('https://' + host + path, { // Make http request
-            method: 'PATCH',
-            headers: headers
-        })
-            .then(res => res.json())
-            .then(json => {
-                if(json) {
-                    // Check if callback is defined
-                    if(callback && typeof callback === 'function') {
-                        callback(json);
-                    }
-                    resolve(json);
-                } else {
-                    reject(new Error('Error retreiving JSON data!'));
-                }
-            });
-    });
-    // Return promise
-    return promise;
+    return makeRequestAndCreatePromise(host, obj, path, 'PATCH', headers, callback);
+}
+
+function makePostRequestAndCreatePromise(host, obj, path, headers, callback) {
+    return makeRequestAndCreatePromise(host, obj, path, 'POST', headers, callback);
 }
 
 /**
@@ -84,13 +66,33 @@ function makePatchRequestAndCreatePromise(host, obj, path, headers, callback) {
  * @param {String} path 
  */
 function generatePath(obj, path) {
-    
     let started = false; // parameter path has been started?
+
     for(let prop in obj) {
         if(started) {
-            path += '&' + prop + '=' + obj[prop];
+            // Check for arrays
+            if(obj[prop] instanceof Array) {
+                let values = obj[prop];
+                for(let i = 0; i < values.length; i++) {
+                    path += '&' + prop + '[]' + '=' + values[i];
+                }
+            } else {
+                path += '&' + prop + '=' + obj[prop];
+            }
         } else {
-            path += '?' + prop + '=' + obj[prop];
+            // Check for arrays
+            if(obj[prop] instanceof Array) {
+                let values = obj[prop];
+                for(let i = 0; i < values.length; i++) {
+                    if(i === 0) {
+                        path += '?' + prop + '[]' + '=' + values[i];
+                    } else {
+                        path += '&' + prop + '[]' + '=' + values[i];
+                    }
+                }
+            } else {
+                path += '?' + prop + '=' + obj[prop];
+            }
             started = true;
         }
     }
@@ -121,7 +123,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/accounts';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         // Get all of a property from a single account
@@ -140,7 +142,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + account_id + '/addresses';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -154,7 +156,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + account_id + '/contacts';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -168,7 +170,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + account_id + '/call_logs';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -182,7 +184,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + account_id + '/dids';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -196,7 +198,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + account_id + '/data_usage_histories';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -210,7 +212,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + account_id + '/ip_assignments';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -224,7 +226,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + account_id + '/inventory_items';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -238,7 +240,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + account_id + '/invoices';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             // Get all of a property of an invoice
@@ -258,7 +260,7 @@ function Sonar(connection_object) {
                     // build path
                     let path = this.__path + account_id + '/invoices/' + invoice_id + '/credits';
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 },
 
                 /**
@@ -273,7 +275,7 @@ function Sonar(connection_object) {
                     // build path
                     let path = this.__path + account_id + '/invoices/' + invoice_id + '/debits';
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 }
             },
 
@@ -288,7 +290,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + account_id + '/payment_methods';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -302,7 +304,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + account_id + '/services';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -316,7 +318,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + account_id + '/account_tax_overrides';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             // All account billing info
@@ -335,7 +337,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + account_id + '/billing_details';
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 },
 
                 /**
@@ -349,7 +351,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + account_id + '/billing_parameters';
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 },
             },
 
@@ -369,7 +371,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + account_id + '/transactions/debits';
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 },
 
                 /**
@@ -383,7 +385,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + account_id + '/transactions/deposits';
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 },
 
                 /**
@@ -397,7 +399,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + account_id + '/transactions/discounts';
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 },
 
                 /**
@@ -411,7 +413,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + account_id + '/transactions/payments';
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 }
             },
 
@@ -426,7 +428,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + account_id + '/contracts';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             }
         },
 
@@ -441,7 +443,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/network/provisioning/address_lists';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -455,7 +457,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/network/monitoring/alerting_rotations';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         // Alerting rotation properties
@@ -475,7 +477,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + alertingRotation_id + '/alerting_rotation_days';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             }
         },
 
@@ -490,7 +492,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/network/provisioning/dhcp_servers';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -504,7 +506,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/network/provisioning/dhcp_server_identifiers';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -518,7 +520,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/system/voice/dids';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -534,7 +536,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/' + entity + '/' + entity_id + '/files';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         // Get all financial properties
@@ -553,7 +555,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/taxes';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             // Get all of a property of a tax
@@ -572,7 +574,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + tax_id + '/geotaxes';
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 }
             },
 
@@ -587,7 +589,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/general_ledger_codes';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -600,7 +602,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/invoices/invoice_messages';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             }
         },
 
@@ -615,7 +617,7 @@ function Sonar(connection_object) {
              * @param {Function} callback
              */
             supernets: function(obj, callback) {
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, this._path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, this._path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -629,7 +631,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + supernet_id + '/subnets';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -645,7 +647,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + supernet_id + '/subnets/' + subnet_id + '/ip_pools';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             }
         },
 
@@ -660,7 +662,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/system/tickets/inbound_email_accounts';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -673,7 +675,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/network/provisioning/inline_devices';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         // Get all of a property of the inventory items
@@ -690,7 +692,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/categories';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -703,7 +705,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/items';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -716,7 +718,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/manufacturers';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -737,7 +739,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/models';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             // Get all of a model property
@@ -757,7 +759,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/' + model_id + '/fields';
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 },
 
                 /**
@@ -771,7 +773,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/' + model_id + '/inventory_model_deployment_types';
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 },
 
                 /**
@@ -786,7 +788,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/' + model_id + '/depletion_thresholds';
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 }
             },
 
@@ -801,7 +803,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/inventory_locations';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -819,7 +821,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = '/api/v1/inventory_location/' + location_id + '/addresses';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -832,7 +834,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/generic_inventory_assignees';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -846,7 +848,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/vehicles';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             }
         },
 
@@ -860,7 +862,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/scheduling/jobs';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         // Get all properties of jobs
@@ -877,7 +879,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = '/api/v1/scheduling/job_types';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -891,7 +893,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + job_id + '/desired_job_datetimes';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             }
         },
 
@@ -910,7 +912,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/monitoring_templates';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -924,7 +926,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/monitoring_templates/' + template_id + '/monitoring_graphs';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -939,7 +941,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/monitoring_templates/' + template_id + '/snmp_oids/' + oid_id + '/snmp_oid_thresholds';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -953,7 +955,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/monitoring_templates/' + template_id + '/snmp_oids';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             }
         },
 
@@ -967,7 +969,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/network/network_sites';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         // Get all of a network site property
@@ -987,7 +989,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + networkSite_id + '/ip_assignments';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1002,7 +1004,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + networkSite_id + '/inventory_items';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1017,7 +1019,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + networkSite_id + '/addresses';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             }
         },
 
@@ -1033,7 +1035,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/notes/' + entity_type + '/' + entity_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
         
         /**
@@ -1046,7 +1048,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/system/packages';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         // Get all of a property of RADIUS
@@ -1063,7 +1065,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = '/api/v1/accounts/' + account_id + '/radius_accounts';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1076,7 +1078,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = '/api/v1/network/provisioning/radius_groups';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1090,7 +1092,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = '/api/v1/network/provisioning/radius_groups/' + group_id + '/attributes';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             }
         },
 
@@ -1104,7 +1106,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/system/voice/rate_centers';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         }, 
 
         /**
@@ -1117,7 +1119,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/roles';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -1130,7 +1132,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/scheduling/schedules';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         // Get all of a scheduled property
@@ -1147,7 +1149,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = '/api/v1/accounts/' + account_id + '/scheduled_events';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1161,7 +1163,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = '/api/v1/scheduling/schedule_blockers';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1175,7 +1177,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = '/api/v1/scheduling/scheduled_time_offs';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             }
         },
 
@@ -1194,7 +1196,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/services';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1208,7 +1210,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/custom_fields';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1222,7 +1224,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/address_types';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             // Get all of a system billing property
@@ -1241,14 +1243,14 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/usage_based_billing_policies/' + policy_id + '/usage_based_billing_free_periods';
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 },
 
                 policies: function(obj, callback) {
                     // Build path
                     let path = this.__path + '/usage_based_billing_policies';
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 }
             },
 
@@ -1268,7 +1270,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/account_groups';
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 },
 
                 /**
@@ -1282,7 +1284,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/account_statuses';
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 },
 
                 /**
@@ -1296,7 +1298,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/account_types';
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
                 }
             }
         },
@@ -1312,7 +1314,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/system/misc/task_templates';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         // Get all of a task template property
@@ -1331,7 +1333,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + template_id + '/template_tasks';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             }
         },
 
@@ -1347,7 +1349,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/' + entity_type + '/' + entity_id + '/tasks';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -1360,7 +1362,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/tickets';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         // Get all of a ticket property
@@ -1379,7 +1381,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = '/api/v1/system/tickets/ticket_categories';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1393,7 +1395,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = '/api/v1/system/tickets/ticket_groups';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1408,7 +1410,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + ticket_id + '/ticket_comments';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1423,7 +1425,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + ticket_id + '/ticket_replies';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             }
         },
 
@@ -1437,7 +1439,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/users';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -1451,7 +1453,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/system/voice/voice_providers';
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
         }
     };
 
@@ -1468,7 +1470,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/accounts/' + account_id;
             // // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         // Get a property of an individual account
@@ -1487,7 +1489,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + account_id + '/addresses/' + address_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1501,7 +1503,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + account_id + '/call_logs/' + callLog_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1515,7 +1517,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + account_id + '/contacts/' + contact_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1529,7 +1531,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + account_id + '/dids/' + did_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1544,7 +1546,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + account_id + '/data_usage_histories/' + data_usage_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1559,7 +1561,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + account_id + '/ip_assignments/' + ip_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             // Individual inventory properties
@@ -1579,7 +1581,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/' + account_id + '/inventory_items/' + item_id;
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
                 }
             },
 
@@ -1595,7 +1597,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + account_id + '/invoices/' + invoice_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1610,7 +1612,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + account_id + '/payment_methods/' + payment_method_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1624,7 +1626,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + account_id + '/services/' + relationship_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1641,7 +1643,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + account_id + '/account_tax_overrides/' + tax_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             // Transactions
@@ -1660,7 +1662,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/' + account_id + '/transactions/debits/' + debit_id;
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
                 },
 
                 /**
@@ -1674,7 +1676,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/' + account_id + '/transactions/deposits/' + deposit_id;
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
                 },
 
                 /**
@@ -1688,7 +1690,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/' + account_id + '/transactions/discounts/' + discount_id;
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
                 },
 
                 /**
@@ -1702,7 +1704,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/' + account_id + '/transactions/payments/' + payment_id;
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
                 }
             },
 
@@ -1717,7 +1719,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + account_id + '/contracts/' + contract_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1731,7 +1733,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + account_id + '/contracts/' + contract_id + '/base64';
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
         },
 
@@ -1746,7 +1748,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/network/provisioning/address_lists/' + addressList_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -1760,7 +1762,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/network/monitoring/alerting_rotations/' + alertingRotation_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         // Alerting rotation properties
@@ -1779,7 +1781,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + alertingRotation_id + '/alerting_rotation_days/' + day_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             }
         },
 
@@ -1794,7 +1796,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/network/provisioning/dhcp_server_identifiers/' + dhcpServerId_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -1808,7 +1810,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/network/provisioning/dhcp_servers/' + dhcpServer_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -1822,7 +1824,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/system/voice/dids/' + did_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -1836,7 +1838,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/' + entity + '/' + entity_id + '/files/' + file_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         // Financial properties
@@ -1855,7 +1857,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/taxes/' + tax_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             // Get all of a property of a tax
@@ -1875,7 +1877,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + tax_id + '/geotaxes/' + geoTax_id;
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
                 }
             },
 
@@ -1887,7 +1889,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/general_ledger_codes/' + generalLedgerCode_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
         },
 
@@ -1906,7 +1908,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + supernet_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1921,7 +1923,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + supernet_id + '/subnets/' + subnet_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1937,7 +1939,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + supernet_id + '/subnets/' + subnet_id + '/ip_pools/' + ipPool_id; 
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback); 
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback); 
             }
         },
 
@@ -1952,7 +1954,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/system/tickets/inbound_email_accounts/' + inboundEmailAccount_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -1966,7 +1968,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/network/provisioning/inline_devices/' + inlineDevice_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         // Inventory properties
@@ -1984,7 +1986,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/categories/' + category_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -1998,7 +2000,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/items/' + item_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2012,7 +2014,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/manufacturers/' + manufacturer_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2026,7 +2028,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/models/' + model_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             // Model properties
@@ -2045,7 +2047,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/' + model_id + '/fields/' + field_id;
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
                 },
 
                 /**
@@ -2060,7 +2062,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/' + model_id + '/inventory_model_deployment_types/' + deploymentType_id;
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
                 },
 
                 /**
@@ -2076,7 +2078,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/' + model_id + '/depletion_thresholds/' + depletionThreshold_id;
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
                 },
             },
 
@@ -2096,7 +2098,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '_locations/' + location_id + '/addresses/' + address_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2110,7 +2112,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/generic_inventory_assignees/' + assignee_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2124,7 +2126,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/inventory_locations/' + location_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2138,16 +2140,15 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/vehicles/' + vehicle_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             }
         },
-
 
         Job: function(job_id, callback) {
             // Build path
             let path = '/api/v1/scheduling/jobs/' + job_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         // Job properties
@@ -2165,7 +2166,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = '/api/v1/scheduling/job_types/' + type_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2180,7 +2181,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + job_id + '/desired_job_datetimes/' + date_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             }
         },
 
@@ -2199,7 +2200,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/monitoring_templates/' + template_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2214,7 +2215,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/monitoring_templates/' + template_id + '/monitoring_graphs/' + graph_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2230,7 +2231,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/monitoring_templates/' + template_id + '/snmp_oids/' + oid_id + '/snmp_oid_thresholds/' + threshold_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2245,7 +2246,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/monitoring_templates/' + template_id + '/snmp_oids/' + oid_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
         },
 
@@ -2260,7 +2261,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/network/network_sites/' + networkSite_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         // Network site properties
@@ -2279,7 +2280,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + networkSite_id + '/ip_assignments/' + ip_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2294,7 +2295,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + networkSite_id + '/inventory_items/' + item_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2309,7 +2310,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + networkSite_id + '/addresses/' + address_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             }
         },
 
@@ -2326,7 +2327,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/notes/' + entity_type + '/' + entity_id + '/' + note_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -2340,10 +2341,10 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/system/packages/' + package_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
-        // Radius properties
+        // Radius propertiesF
         radius: {
             _path: '/api/v1/network/provisioning/radius_groups',
 
@@ -2359,7 +2360,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = '/api/v1/accounts/' + account_id + '/radius_accounts/' + radius_account_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2373,7 +2374,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + radius_group_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2388,7 +2389,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + radius_group_id + '/attributes/' + attribute_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             }
         },
 
@@ -2403,7 +2404,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/system/voice/rate_centers/' + rateCenter_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -2417,7 +2418,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/roles/' + role_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -2431,7 +2432,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/scheduling/schedules/' + schedule_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         // Scheduled properties
@@ -2450,7 +2451,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = '/api/v1/accounts/' + account_id + '/scheduled_events/' + event_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2464,7 +2465,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/schedule_blockers/' + blocker_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2478,7 +2479,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/scheduled_time_offs/' + timeOff_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             }
         },
 
@@ -2496,7 +2497,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/services/' + service_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2510,7 +2511,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/custom_fields/' + customField_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2524,7 +2525,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/address_types/' + type_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             // System billing properties
@@ -2544,7 +2545,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/' + policy_id + '/usage_based_billing_free_periods/' + freePeriod_id;
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
                 },
 
                 /**
@@ -2559,7 +2560,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/' + policy_id;
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
                 },
             },
 
@@ -2578,7 +2579,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/account_groups/' + group_id;
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
                 },
 
                 /**
@@ -2592,7 +2593,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/account_statuses/' + status_id;
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
                 },
 
                 /**
@@ -2606,7 +2607,7 @@ function Sonar(connection_object) {
                     // Build path
                     let path = this.__path + '/account_types/' + type_id;
                     // Make request
-                    return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                    return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
                 },
             }
         },
@@ -2622,7 +2623,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/system/misc/task_templates/' + taskTemplate_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         // Task template properties
@@ -2641,7 +2642,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + taskTemplate_id + '/template_tasks/' + task_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
         },
 
@@ -2657,7 +2658,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/' + entity + '/' + entity_id + '/tasks/' + task_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -2671,7 +2672,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/tickets/' + ticket_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         // Ticket properties
@@ -2689,7 +2690,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = '/api/v1/system/tickets/ticket_categories/' + category_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2703,7 +2704,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = '/api/v1/system/tickets/ticket_groups/' + group_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2718,7 +2719,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + ticket_id + '/ticket_comments/' + comment_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
 
             /**
@@ -2733,7 +2734,7 @@ function Sonar(connection_object) {
                 // Build path
                 let path = this._path + '/' + ticket_id + '/ticket_replies/' + reply_id;
                 // Make request
-                return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+                return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
             },
         },
 
@@ -2748,7 +2749,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/users/' + user_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
 
         /**
@@ -2762,7 +2763,7 @@ function Sonar(connection_object) {
             // Build path
             let path = '/api/v1/system/voice/voice_providers/' + voiceProvider_id;
             // Make request
-            return makeRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
+            return makeGetRequestAndCreatePromise(connection_object.sonarHost, null, path, _sonarAuthHeader, callback);
         },
     };
 
@@ -3052,6 +3053,118 @@ function Sonar(connection_object) {
                 return makePatchRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
             },
         },
+
+        // Update a property of an entity
+        entity: {
+
+            /**
+             * Update the data in a custom field for an entity.
+             * @param {String} entity 
+             * @param {Number} entity_id 
+             * @param {Number} custom_field_id 
+             * @param {Obj} obj 
+             * @param {Function} callback 
+             */
+            customField: function(entity, entity_id, custom_field_id, obj, callback) {
+                // Build path
+                let path = '/api/v1/entity_custom_fields/' + entity + '/' + entity_id + '/' + custom_field_id;
+                // Make request
+                return makePatchRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            }
+        },
+    };
+
+    // Each "create" path of the sonar API
+    this.create = {
+
+        /**
+         * Create a new ticket in
+         * the Sonar instance.
+         * Required parameters:
+         * subject, type
+         * 
+         * @param {Number} ticket_id 
+         * @param {Function} callback 
+         */
+        Ticket: function(obj, callback) {
+            // Build path
+            let path = '/api/v1/tickets';
+            // Make request
+            return makePostRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+        },
+
+        // Ticket properties
+        ticket: {
+
+            _path: '/api/v1/tickets',
+
+            /**
+             * Create a comment on a ticket.
+             * Required parameter:
+             * text
+             * 
+             * @param {Number} ticket_id
+             * @param {Object} obj
+             * @param {Function} callback
+             */
+            comment: function(ticket_id, obj, callback) {
+                // Build path
+                let path = this._path + '/' + ticket_id + '/ticket_comments';
+                // Make request
+                return makePostRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            },
+
+            /**
+             * Create a ticket reply.
+             * Required parameter:
+             * text
+             * 
+             * @param {Number} ticket_id
+             * @param {Object} obj
+             * @param {Function} callback
+             */
+            reply: function(ticket_id, obj, callback) {
+                // Build path
+                let path = this._path + '/' + ticket_id + '/ticket_replies';
+                // Make request
+                return makePostRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            }
+        },
+
+        /**
+         * Create a job in the Sonar instance.
+         * Requiered parameters: 
+         * job_type_id, assigned_type, assigned_id
+         * 
+         * @param {Object} obj 
+         * @param {Function} callback 
+         */
+        Job: function(obj, callback) {
+            // Build path
+            let path = '/api/v1/scheduling/jobs';
+            // Make request
+            return makePostRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+        },
+
+        // Job properties
+        job: {
+
+            /**
+             * Create a new desired 
+             * date / time of a job.
+             * Required parameters:
+             * date (Y-m-d format), start_time (H:m:s), end_time (H:m:s)
+             * 
+             * @param {Number} job_id 
+             * @param {Function} callback 
+             */
+            desiredDate: function(job_id, obj, callback) {
+                // Build path
+                let path = this._path + '/' + job_id + '/desired_job_datetimes';
+                // Make request
+                return makePostRequestAndCreatePromise(connection_object.sonarHost, obj, path, _sonarAuthHeader, callback);
+            }
+        }
     };
 }
 

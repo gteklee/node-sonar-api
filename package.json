@@ -1,6 +1,6 @@
 {
   "name": "node-sonar-api",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Node.js client package for working with sonar.software's API.",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,9 @@
     "test": "jest",
     "example": "node ./examples/basic-update.js",
     "example-all": "node ./examples/basic-getAll.js",
-    "example-get": "node ./examples/basic-get.js"
+    "example-get": "node ./examples/basic-get.js",
+    "example-update": "node ./examples/basic-update.js",
+    "example-create": "node ./examples/basic-create.js"
   },
   "repository": {
     "type": "git",
