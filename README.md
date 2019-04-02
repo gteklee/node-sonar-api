@@ -8,7 +8,7 @@ Node client for the [sonar.software API](https://sonar.software/apidoc/) ![alt t
 
 (Early release of the package only includes "getAll" and "get" requests! Plans for later releases will include "create", "delete", and "update" requests to the API)
 
-* 0.2.7 fixes path generation for object parameters that require arrays *
+* 0.2.7 fixes path generation for parameters that require arrays
 
 ## Installation
 Using npm:
