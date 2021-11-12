@@ -1,5 +1,7 @@
 # Node.js client for the Sonar REST API
 
+# NOTE: I am no longer working on any projects related to Sonar Software. I've updated links to Sonar's new 2.0 API that utilizes GRAPHQL.
+
 [![npm version](https://badge.fury.io/js/node-sonar-api.svg)](https://badge.fury.io/js/node-sonar-api)
 
 [![NPM](https://nodei.co/npm/node-sonar-api.png)](https://nodei.co/npm/node-sonar-api/)
@@ -8,9 +10,6 @@ Node client for the [~~sonar.software API~~](https://sonar.software/apidoc/) ![a
 
 Sonar has moved on to version 2.0:
 [📖 sonar.software GRAPHQL 2.0 API](https://api.sonar.software/)
-
-I am no longer working on any projects related to Sonar Software.
-Feel free to fork this project.
 
 (Early release of the package only includes "getAll" and "get" requests! Plans for later releases will include "create", "delete", and "update" requests to the API)
 
