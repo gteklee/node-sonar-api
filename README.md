@@ -146,4 +146,9 @@ client.update.Account(1, {
 "update" functionality only implemented for the /api/v1/accounts/... portion of the API. This is for testing purposes as testing with the 'PATCH' requests are limited. If any problems are encountered while using the "update" functionality, please open an issue.
 
 ## Documentation
-[📖 sonar.software REST API](https://sonar.software/apidoc/)
+[~~📖 sonar.software REST API~~](https://sonar.software/apidoc/)
+Sonar has moved on to version 2.0:
+[📖 sonar.software GRAPHQL 2.0 API](https://api.sonar.software/)
+
+I am no longer working on any projects related to Sonar Software.
+Feel free to fork this project.
